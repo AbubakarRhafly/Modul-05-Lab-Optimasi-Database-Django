@@ -215,28 +215,38 @@ Isi angka query dan total time berdasarkan hasil screenshot Django Silk di lapto
 
 | Kasus | Endpoint Baseline | Endpoint Optimized | Perbandingan Silk | Teknik |
 |---|---|---|---|---|
-| Course + teacher | `/lab/course-list/baseline/` | `/lab/course-list/optimized/` | contoh: 101 query -> 1 query, 250ms -> 15ms | `select_related()` |
-| Course + members + content + comments | `/lab/course-members/baseline/` | `/lab/course-members/optimized/` | contoh: banyak query -> sedikit query | `select_related()`, `prefetch_related()`, `annotate()` |
-| Statistik dashboard | `/lab/course-dashboard/baseline/` | `/lab/course-dashboard/optimized/` | contoh: ratusan query -> beberapa query | `aggregate()`, `annotate()` |
+| Course + teacher | `/lab/course-list/baseline/` | `/lab/course-list/optimized/` | `101 query -> 1 query, 362ms -> 22ms` | `select_related()` |
+| Course + members | `/lab/course-members/baseline/` | `/lab/course-members/optimized/` | `1101 query -> 3 query, 3986ms -> 86ms` | `prefetch_related()` / `annotate()` |
+| Statistik dashboard | `/lab/course-dashboard/baseline/` | `/lab/course-dashboard/optimized/` | `401 query -> 2 query, 1817ms -> 79ms` | `aggregate()` / `annotate()` |
 
-> Catatan: Angka pasti bisa berbeda tergantung laptop, container, dan kondisi database. Yang penting endpoint optimized menunjukkan penurunan query/time minimal 50% dibanding baseline.
+Berdasarkan hasil Django Silk, endpoint optimized berhasil mengurangi jumlah query secara signifikan. Pada kasus Course + teacher, query turun dari 101 menjadi 1 query karena penggunaan `select_related()`. Pada kasus Course + members, query turun dari 1101 menjadi 3 query karena penggunaan `prefetch_related()` dan `annotate()`. Pada dashboard statistik, query turun dari 401 menjadi 2 query karena proses perhitungan dipindahkan ke database menggunakan `aggregate()` dan `annotate()`.
+
+Hasil ini menunjukkan bahwa optimasi berhasil karena setiap endpoint optimized mengalami peningkatan performa lebih dari 50% dibandingkan endpoint baseline.
 
 ---
 
-## 6. Screenshot yang Perlu Dimasukkan
-
-Simpan screenshot ke folder `screenshots/` sebelum upload ke GitHub.
-
-Minimal screenshot:
+## 6. Screenshot 
 
 1. `/silk/` bisa diakses
-2. Request Silk untuk `/lab/course-list/baseline/`
-3. Request Silk untuk `/lab/course-list/optimized/`
-4. Request Silk untuk `/lab/course-members/baseline/`
-5. Request Silk untuk `/lab/course-members/optimized/`
-6. Request Silk untuk `/lab/course-dashboard/baseline/`
-7. Request Silk untuk `/lab/course-dashboard/optimized/`
-8. SQL tab dari Django Silk untuk menunjukkan duplicate query baseline
+<img width="1905" height="1006" alt="Screenshot 2026-04-16 215739" src="https://github.com/user-attachments/assets/017bc8d1-4b70-4de7-9145-66e9a5ce3508" />
+
+2. SQL Silk untuk `/lab/course-list/baseline/`
+<img width="1901" height="1014" alt="course-list-baseline" src="https://github.com/user-attachments/assets/74bf6495-8acd-4cd9-8e6a-a7c8ed1a9d92" />
+
+3. SQL Silk untuk `/lab/course-list/optimized/`
+<img width="1910" height="1004" alt="course-list-optimized" src="https://github.com/user-attachments/assets/db8245d3-8682-427b-98c9-d20b54f8aa9d" />
+
+4. SQL Silk untuk `/lab/course-members/baseline/`
+<img width="1891" height="1011" alt="course-member-baseline" src="https://github.com/user-attachments/assets/928e2ca6-37a7-4120-9b5e-88dc1ac73a80" />
+
+5. SQL Silk untuk `/lab/course-members/optimized/`
+<img width="1916" height="1001" alt="course-member-optimized" src="https://github.com/user-attachments/assets/afe31b28-8eb2-4f8f-ad18-504e8a4e8935" />
+
+6. SQL Silk untuk `/lab/course-dashboard/baseline/`
+<img width="1899" height="1016" alt="course-dashboard-baseline" src="https://github.com/user-attachments/assets/8541e218-43f4-48cd-b562-7cc56ee4686e" />
+
+7. SQL Silk untuk `/lab/course-dashboard/optimized/`
+<img width="1915" height="1012" alt="course-dashboard-optimized" src="https://github.com/user-attachments/assets/d6e4dcd8-4c46-4749-92ad-c9499d026e16" />
 
 ---
 
@@ -268,29 +278,6 @@ Karena perhitungan statistik dilakukan langsung oleh database, bukan dihitung ma
 
 ---
 
-## 8. Cara Upload ke GitHub
-
-Jika repository belum dibuat:
-
-```bash
-git init
-git add .
-git commit -m "Implement Lab 05 database optimization"
-git branch -M main
-git remote add origin https://github.com/USERNAME/NAMA-REPO.git
-git push -u origin main
-```
-
-Jika repository sudah ada:
-
-```bash
-git add .
-git commit -m "Implement Lab 05 database optimization"
-git push
-```
-
----
-
-## 9. Kesimpulan
+## 8. Kesimpulan
 
 Optimasi database berhasil dilakukan dengan membandingkan endpoint baseline dan optimized. Teknik `select_related()`, `prefetch_related()`, `aggregate()`, `annotate()`, bulk operation, dan database indexing digunakan untuk mengurangi jumlah query dan mempercepat response API.
